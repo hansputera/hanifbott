@@ -12,11 +12,11 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "add": "^2.0.6",
+    "chart.js": "^3.3.2",
+    "chartjs-node-canvas": "^3.2.0",
     "luxon": "^1.27.0",
     "node-fetch": "^2.6.1",
-    "telegraf": "^4.3.0",
-    "yarn": "^1.22.10"
+    "telegraf": "^4.3.0"
   },
   "scripts": {
     "build": "tsc --build tsconfig.json",

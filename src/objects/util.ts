@@ -1,4 +1,5 @@
 import type { Update, Message } from "typegram";
+import request from "./request";
 
 export default class Util {
     static parseCommand(message: Update.New & Update.NonChannel & Message.TextMessage, username: string) {
@@ -20,5 +21,13 @@ export default class Util {
         }
     
         return {args, command};
+    }
+    static async hastebin(text: string) {
+        const json = await (await request("https://hastebin.com", "/documents", {
+            method: "POST",
+            body: text
+        })).json();
+        
+        return `https://hastebin.com/${json.key}`;
     }
 }
