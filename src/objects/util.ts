@@ -28,6 +28,24 @@ export default class Util {
             body: text
         })).json();
         
-        return `https://hastebin.com/${json.key}`;
+        return { url: `https://hastebin.com/${json.key}`, code: json.key as string };
     }
+    static async getBinContent(code: string) {
+        const raw = await (await request("https://hastebin.com", `/raw/${code}`)).text();
+        return raw;
+    }
+    static isValidURL(url: string) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+    static timeString(seconds: number, forceHours = false) {
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor(seconds % 3600 / 60);
+
+		return `${forceHours || hours >= 1 ? `${hours}:` : ''}${hours >= 1 ? `0${minutes}`.slice(-2) : minutes}:${`0${Math.floor(seconds % 60)}`.slice(-2)}`;
+	}
 }

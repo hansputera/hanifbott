@@ -29,7 +29,7 @@ export default class EvalCommand implements ICommand {
             evaled = evaled
                     .replace(/`/g, `\`${String.fromCharCode(8203)}`)
                     .replace(/@/g, `@${String.fromCharCode(8203)}`);
-            if (evaled.length > 5000) evaled = await this.bot.util.hastebin(evaled);
+            if (evaled.length > 5000) evaled = (await this.bot.util.hastebin(evaled)).url;
             await ctx.replyWithMarkdown(`**Input:** \`\`\`${code}\`\`\`\n\n**Output:** \`\`\`${evaled}\`\`\`\n**Type:** \`${type}\``, {
                 reply_to_message_id: ctx.message.message_id
             });

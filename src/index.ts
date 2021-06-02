@@ -1,4 +1,5 @@
 import { resolve } from "path";
+import type { CallbackQuery } from "typegram";
 import config from "./config";
 import Bot from "./objects/bot";
 
@@ -53,4 +54,29 @@ bot.on("text", async (ctx) => {
                 }
             }
         }
+});
+
+bot.on("callback_query", async (ctx) => {
+    const callbackQuery = (ctx.update.callback_query as CallbackQuery & {
+        data: any;
+    });
+    const key_haste = callbackQuery.data;
+    const json = JSON.parse(await bot.util.getBinContent(key_haste));
+    
+    // validate user
+    if (callbackQuery.from.id !== json.userId) return await ctx.answerCbQuery("Kamu tidak diizinkan untuk mengeklik tombol ini!");
+    // YouTube Downloader
+    if (json.downloader) {
+        const info = await bot.youtube.info(json.url);
+        if (info.videoDetails.isPrivate) return await ctx.answerCbQuery("Video ini private, tidak bisa di download!");
+        await ctx.deleteMessage(callbackQuery.message.message_id);
+        const buff = bot.youtube.download(json.url, resolve(__dirname, "..", "assets", `d-${callbackQuery.from.id}`));
+        const txt = await bot.youtube.toHumanText(json.url);
+        if (json.type === "video") return await ctx.replyWithVideo({ source: buff }, {
+            caption: txt
+        });
+        else await ctx.replyWithAudio({ source: buff }, {
+            caption: txt
+        });
+    }
 });

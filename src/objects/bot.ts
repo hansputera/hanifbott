@@ -4,10 +4,12 @@ import type { Update } from "typegram";
 import type { ICategory, ICommand } from "../types";
 import request from "./request";
 import Util from "./util";
+import YouTube from "./youtube";
 
 export default class Bot extends Telegraf {
     public util: typeof Util = Util;
     public request = request;
+    public youtube = YouTube;
     public categories: Map<string, ICategory> = new Map();
     public commands: Map<string, ICommand> = new Map();
     public aliases: Map<string, string> = new Map();
