@@ -9,7 +9,7 @@ export default class ExecCommand implements ICommand {
     public async execute(ctx: CTX, args: string[]) {
         if (!args.length) return await ctx.reply("Mohon masukan argumen yang akan dieksekusi!", { reply_to_message_id: ctx.message.message_id });
         exec(args.join(" "), async (error, stdout, stderr) => {
-            if (error || stderr) return await ctx.replyWithMarkdown("```" + error.message || stderr + "```", { reply_to_message_id: ctx.message.message_id });
+            if (error || stderr) return await ctx.replyWithMarkdown("```" + error || stderr + "```", { reply_to_message_id: ctx.message.message_id });
             else await ctx.replyWithMarkdown(`\`\`\`${stdout.length ? stdout : "Executed"}\`\`\``, { reply_to_message_id: ctx.message.message_id });
         });
     }
