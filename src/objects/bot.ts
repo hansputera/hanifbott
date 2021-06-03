@@ -1,15 +1,20 @@
 import { readdir } from "fs";
+import { resolve } from "path";
 import { Context, Telegraf, TelegramError } from "telegraf";
 import type { Update } from "typegram";
 import type { ICategory, ICommand } from "../types";
 import request from "./request";
+import TemporaryDatabase from "./temporarydb";
 import Util from "./util";
 import YouTube from "./youtube";
+import lodash from "lodash";
 
 export default class Bot extends Telegraf {
+    public lodash = lodash;
     public util: typeof Util = Util;
     public request = request;
     public youtube = YouTube;
+    public db = new TemporaryDatabase(resolve(__dirname, "..", "..", "assets", "databases"));
     public categories: Map<string, ICategory> = new Map();
     public commands: Map<string, ICommand> = new Map();
     public aliases: Map<string, string> = new Map();
@@ -44,6 +49,7 @@ export default class Bot extends Telegraf {
                     cmds.filter(cmd => cmd.endsWith(".js") && !cmd.startsWith("category")).forEach((cmd) => {
                         const cmdc: ICommand = new (require(`${directory}/${category}/${cmd}`).default)(this);
                         if (!cmdc.cooldown) cmdc.cooldown = 5000;
+                        if (!cmdc.filters) cmdc.filters = [];
                         cmdc.aliases.forEach(alias => {
                             this.aliases.set(alias, cmdc.name);
                         });

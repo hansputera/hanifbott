@@ -19,5 +19,6 @@ export interface ICommand
     ownerOnly: boolean;
     cooldown?: number;
     groupOnly?: boolean;
+    filters?: number[];
     execute(ctx: CTX, args: string[]): any | Promise<any>;
 }

@@ -1,3 +1,4 @@
+import { readFileSync, unlinkSync } from "fs";
 import { resolve } from "path";
 import type { CallbackQuery } from "typegram";
 import config from "./config";
@@ -26,7 +27,7 @@ bot.on("text", async (ctx) => {
                 args = parsers.args;
             }
             const cmd = bot.commands.get(command) || bot.commands.get(bot.aliases.get(command));
-            if (cmd) {
+            if (cmd && !cmd.filters.includes(ctx.from.id) && !cmd.filters.includes(ctx.chat.id)) {
                 if (cmd.ownerOnly && ctx.from.id !== config.ownerID) return;
                 if (!cooldowns.has(cmd.name)) cooldowns.set(cmd.name, new Map());
                 const now = Date.now();
@@ -60,8 +61,8 @@ bot.on("callback_query", async (ctx) => {
     const callbackQuery = (ctx.update.callback_query as CallbackQuery & {
         data: any;
     });
-    const key_haste = callbackQuery.data;
-    const json = JSON.parse(await bot.util.getBinContent(key_haste));
+    const keyCode = callbackQuery.data;
+    const json = bot.db.get(keyCode);
     
     // validate user
     if (callbackQuery.from.id !== json.userId) return await ctx.answerCbQuery("Kamu tidak diizinkan untuk mengeklik tombol ini!");
@@ -70,13 +71,16 @@ bot.on("callback_query", async (ctx) => {
         const info = await bot.youtube.info(json.url);
         if (info.videoDetails.isPrivate) return await ctx.answerCbQuery("Video ini private, tidak bisa di download!");
         await ctx.deleteMessage(callbackQuery.message.message_id);
-        const buff = bot.youtube.download(json.url, resolve(__dirname, "..", "assets", `d-${callbackQuery.from.id}`));
+        bot.db.set(`downloadProcess-${ctx.from.id}`, 1);
+        const dlPath = resolve(__dirname, "..", "assets", `d-${callbackQuery.from.id}.${json.type === "audio" ? ".mp3" : ".mp4"}`);
+        const pipeStream = bot.youtube.download(json.url, dlPath);
         const txt = await bot.youtube.toHumanText(json.url);
-        if (json.type === "video") return await ctx.replyWithVideo({ source: buff }, {
-            caption: txt
-        });
-        else await ctx.replyWithAudio({ source: buff }, {
-            caption: txt
+        pipeStream.on("finish", () => {
+            if (json.type === "video") return ctx.replyWithVideo({ filename: info.videoDetails.title, source: readFileSync(dlPath) });
+            else ctx.replyWithAudio({ filename: info.videoDetails.title, source: readFileSync(dlPath) });
+            unlinkSync(dlPath);
+            ctx.replyWithMarkdown(txt);
+            bot.db.delete(`downloadProcess-${ctx.from.id}`);
         });
     }
 });

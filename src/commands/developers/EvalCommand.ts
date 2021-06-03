@@ -10,7 +10,7 @@ export default class EvalCommand implements ICommand {
     public cooldown = 1000;
     constructor(private bot: Bot) {}
     public async execute(ctx: CTX, args: string[]) {
-        const { args: Args, flags } = parseQuery(args);
+        const { args: Args, flags } = this.bot.util.parseQuery(args);
         try {
             if (!args.length) return await ctx.reply("Perintah eval harus memiliki argumen!", { reply_to_message_id: ctx.message.message_id });
             let code = Args.join(" ");
@@ -72,15 +72,4 @@ function parseType(input: any) {
       evaled: input,
       type: parseType(input)
     };
-  }
-
-  
-function parseQuery(queries: string[]) {
-    const args: string[] = [];
-    const flags: string[] = [];
-    for (const query of queries) {
-      if (query.startsWith("--")) flags.push(query.slice(2).toLowerCase());
-      else args.push(query);
-    }
-    return { args, flags };
   }

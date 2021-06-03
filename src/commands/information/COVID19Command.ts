@@ -8,6 +8,7 @@ export default class Covid19Command implements ICommand {
     public description = "Menunjukan presentase dan chart covid19 di seluruh dunia atau negara";
     public aliases = ["covid", "corona"];
     public ownerOnly = false;
+    public filters = [-1001182246595];
     constructor(private bot: Bot) {}
     public async execute(ctx: CTX, args: string[]) {
         const country = args[0];

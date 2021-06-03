@@ -23,7 +23,7 @@ export default class Util {
         return {args, command};
     }
     static async hastebin(text: string) {
-        const json = await (await request("https://hastebin.com", "/documents", {
+        const json = await (await request("https://hastebin.com", "/documents", false, {
             method: "POST",
             body: text
         })).json();
@@ -48,4 +48,13 @@ export default class Util {
 
 		return `${forceHours || hours >= 1 ? `${hours}:` : ''}${hours >= 1 ? `0${minutes}`.slice(-2) : minutes}:${`0${Math.floor(seconds % 60)}`.slice(-2)}`;
 	}
+    static parseQuery(queries: string[]) {
+        const args: string[] = [];
+        const flags: string[] = [];
+        for (const query of queries) {
+          if (query.startsWith("--")) flags.push(query.slice(2).toLowerCase());
+          else args.push(query);
+        }
+        return { args, flags };
+      }
 }
