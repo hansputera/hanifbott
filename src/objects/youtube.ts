@@ -22,6 +22,6 @@ export default class YouTube {
     static async toHumanText(url: string) {
         const info = await this.info(url);
         const durationText = Util.timeString(parseInt(info.videoDetails.lengthSeconds));
-        return `Judul: [${info.videoDetails.title}](${info.videoDetails.video_url})\nKanal: [${info.videoDetails.author.name}](${info.videoDetails.author.channel_url})\nSuka: ${info.videoDetails.likes}\nTidak Suka: ${info.videoDetails.dislikes}\nDurasi: ${durationText}\nDeskripsi: ${info.videoDetails.description}`;
+        return `Judul: [${info.videoDetails.title}](${info.videoDetails.video_url})\nKanal: [${info.videoDetails.author.name}](${info.videoDetails.author.channel_url})\nSuka: ${info.videoDetails.likes.toLocaleString()}\nTidak Suka: ${info.videoDetails.dislikes.toLocaleString()}\nDurasi: ${durationText}`;
     }
 }

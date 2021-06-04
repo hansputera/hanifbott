@@ -23,7 +23,7 @@ export default class Util {
         return {args, command};
     }
     static async hastebin(text: string) {
-        const json = await (await request("https://hastebin.com", "/documents", false, {
+        const json = await (await request("https://hastebin.com", "/documents", {
             method: "POST",
             body: text
         })).json();

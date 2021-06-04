@@ -22,7 +22,7 @@ export default class Bot extends Telegraf {
     constructor(token: string, options?: Partial<Telegraf.Options<Context<Update>>>) {
         super(token, options);
     }
-
+ 
     /**
      * Load all events in specified folder.
      * 
