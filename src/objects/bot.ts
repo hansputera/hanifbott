@@ -8,12 +8,14 @@ import TemporaryDatabase from "./temporarydb";
 import Util from "./util";
 import YouTube from "./youtube";
 import lodash from "lodash";
+import Shortener from "./shortener";
 
 export default class Bot extends Telegraf {
     public lodash = lodash;
     public util: typeof Util = Util;
     public request = request;
     public youtube = YouTube;
+    public shortener = Shortener;
     public db = new TemporaryDatabase(resolve(__dirname, "..", "..", "assets", "databases"));
     public categories: Map<string, ICategory> = new Map();
     public commands: Map<string, ICommand> = new Map();

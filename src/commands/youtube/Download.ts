@@ -35,7 +35,7 @@ export default class DownloadCommand implements ICommand {
                 callback_data: id
             });
         });
-        await ctx.replyWithMarkdown(`Silahkan pilih salah satu video dibawah ini dari ${videos.length} video yang diberikan dengan cara di klik!`, {
+        if (buttons.length == videos.length) await ctx.replyWithMarkdown(`Silahkan pilih salah satu video dibawah ini dari ${videos.length} video yang diberikan dengan cara di klik!`, {
             reply_to_message_id: ctx.message.message_id,
             reply_markup: {
                 selective: true,
