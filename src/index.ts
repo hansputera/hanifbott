@@ -3,12 +3,14 @@ import { resolve } from "path";
 import type { CallbackQuery } from "typegram";
 import config from "./config";
 import Bot from "./objects/bot";
+import main_website from "./web";
 
 const bot = new Bot(config.token);
 const cooldowns: Map<string, Map<number, number>> = new Map();
 bot.launch().then(() => {
     console.log("Logged in");
     bot.loadCommands(resolve(__dirname, "commands"));
+    main_website();
 });
 const commands = Array.from(bot.commands, ([_, command]) => ({ command: command.name, description: command.description }));
 bot.telegram.setMyCommands(commands).catch(console.error);
