@@ -18,6 +18,7 @@ export default class Shortener {
             return await new Promise((resolve) => {
                 const csrf = document.querySelector('[name="csrf-token"]').getAttribute("content");
                 fetch("/api/public/link/shorten", {
+                    method: "POST",
                     headers: {
                         "X-CSRF-TOKEN": csrf
                     },
