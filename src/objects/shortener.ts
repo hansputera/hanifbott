@@ -25,8 +25,9 @@ export default class Shortener {
                         url
                     })
                 }).then((response) => response.json()).then(json => {
-                    resolve(json.short);
-                });
+                    if (json.errors) resolve(undefined);
+                    else resolve(json.short);
+                }).catch((e) => resolve("Error: " + e));
             });
         });
         await page.close();

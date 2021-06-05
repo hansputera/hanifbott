@@ -2,7 +2,7 @@
     "compilerOptions": {
         "allowJs": true,
         "esModuleInterop": true,
-        "target": "ES2016",
+        "target": "ES2017",
         "module": "CommonJS",
         "pretty": true,
         "outDir": "./dist",
