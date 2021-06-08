@@ -9,14 +9,18 @@ import Util from "./util";
 import YouTube from "./youtube";
 import lodash from "lodash";
 import Shortener from "./shortener";
+import Brainly from "./brainly";
+import PStoreNetScraper from "./pstorenet";
 
 export default class Bot extends Telegraf {
     public lodash = lodash;
     public util: typeof Util = Util;
+    public pstore = new PStoreNetScraper();
     public request = request;
     public youtube = YouTube;
     public shortener = Shortener;
-    public db = new TemporaryDatabase(resolve(__dirname, "..", "..", "assets", "databases"));
+    public brainly = new Brainly();
+    public db = new TemporaryDatabase(resolve(__dirname, "..", "..", "assets"));
     public categories: Map<string, ICategory> = new Map();
     public commands: Map<string, ICommand> = new Map();
     public aliases: Map<string, string> = new Map();

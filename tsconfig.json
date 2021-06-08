@@ -8,6 +8,6 @@
         "outDir": "./dist",
         "skipLibCheck": true
     },
-    "exclude": ["node_modules"],
+    "exclude": ["node_modules", "assets"],
     "include": ["src/**/*"]
 }

@@ -21,27 +21,24 @@ export default class DownloadCommand implements ICommand {
         if (flags.includes("mp4")) type = "video";
         const { videos } = await this.bot.youtube.find(query);
         if (!videos.length) return await ctx.reply("Maaf, aku tak bisa menemukannya!", { reply_to_message_id: ctx.message.message_id });
-        let buttons: InlineKeyboardButton[] = [];
+        let buttons: InlineKeyboardButton[][] = [];
         videos.forEach((video, i) => {
             const id = uuid.v4().split("-")[0];
+            buttons.push([{
+                text: `${i+1}. ${video.title}`,
+                callback_data: id
+            }]);
             this.bot.db.set(id, {
                 downloader: true,
                 userId: ctx.from.id,
                 type,
                 url: video.link
             });
-            buttons.push({
-                text: `${i+1}. ${video.title}`,
-                callback_data: id
-            });
         });
-        if (buttons.length == videos.length) await ctx.replyWithMarkdown(`Silahkan pilih salah satu video dibawah ini dari ${videos.length} video yang diberikan dengan cara di klik!`, {
+        await ctx.replyWithMarkdown(`Silahkan pilih salah satu video dibawah ini dengan cara di klik tombolnya!`, {
             reply_to_message_id: ctx.message.message_id,
             reply_markup: {
-                selective: true,
-                inline_keyboard: [
-                   buttons
-                ]
+                inline_keyboard:  buttons
             }
         });
     }

@@ -1,5 +1,8 @@
-import fetch, { RequestInit } from "node-fetch";
+import axios, { AxiosRequestConfig } from "axios";
 
-export default function request(baseURL: string, endpoint?: string, options?: RequestInit) {
-    return fetch(`${baseURL}${endpoint ? endpoint : ""}`, options);
+export default function request(baseURL: string, options?: AxiosRequestConfig) {
+    return axios.create({
+        baseURL,
+        ...options
+    });
 }

@@ -16,21 +16,21 @@ export default class Shortener {
         // requesting to api
         const shortCode = await page.evaluate(async(url) => {
             return await new Promise((resolve) => {
-                const csrf = document.querySelector('[name="csrf-token"]').getAttribute("content");
+                const csrf = $("[name=\"csrf-token\"]").attr("content");
                 fetch("/api/public/link/shorten", {
                     method: "POST",
                     headers: {
                         "X-CSRF-TOKEN": csrf
                     },
                     body: new URLSearchParams({
-                        url
+                        url: url
                     })
                 }).then((response) => response.json()).then(json => {
-                    if (json.errors) resolve(undefined);
+                    if (json.errors) resolve("Error: " + JSON.stringify(json.errors) + " - " + url);
                     else resolve(json.short);
                 }).catch((e) => resolve("Error: " + e));
             });
-        });
+        }, url);
         await page.close();
         await browser.close();
         return shortCode;

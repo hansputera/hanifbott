@@ -23,16 +23,13 @@ export default class Util {
         return {args, command};
     }
     static async hastebin(text: string) {
-        const json = await (await request("https://hastebin.com", "/documents", {
-            method: "POST",
-            body: text
-        })).json();
+       const { data: json } = await request("https://hastebin.com").post("/documents", text);
         
         return { url: `https://hastebin.com/${json.key}`, code: json.key as string };
     }
     static async getBinContent(code: string) {
-        const raw = await (await request("https://hastebin.com", `/raw/${code}`)).text();
-        return raw;
+        const raw = await request("https://hastebin.com").get("/raw/" + code);
+        return raw.data;
     }
     static isValidURL(url: string) {
         try {
@@ -56,5 +53,8 @@ export default class Util {
           else args.push(query);
         }
         return { args, flags };
-      }
+    }
+    static removeHTMLTags(input: string) {
+        return input.replace(/(<br?\s?\/>)/ig, " \n").replace(/(<([^>]+)>)/ig, "");
+    }
 }

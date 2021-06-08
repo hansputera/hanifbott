@@ -13,7 +13,9 @@ export default class IDCommand implements ICommand {
         if (!q) return await ctx.reply("Mohon masukan tautan yang akan diperpendek!", { reply_to_message_id: ctx.message.message_id });
         const short = await this.bot.shortener.sdotid(q);
         if (!short) return await ctx.reply("Tautan kamu invalid, coba lagi!", { reply_to_message_id: ctx.message.message_id });
-        else if (/error/gi.test(short as string)) return await ctx.reply(short as string, { reply_to_message_id: ctx.message.message_id });
-        else await ctx.reply(`Ini tautan pendek kamu: ${short}`, { reply_to_message_id: ctx.message.message_id });
+        else if (/error/gi.test(short as string)) {
+		await ctx.reply("Sepertiny ada error di sistem saya", { reply_to_message_id: ctx.message.message_id });
+        	await ctx.tg.sendMessage("@hanifdwypoetra", `Command: ${this.name}\nID: ${ctx.from.id}\nDate: ${Date.now()}\nError: ${short as string}`, { parse_mode: "Markdown" });
+	} else await ctx.reply(`Ini tautan pendek kamu: https://s.id/${short}`, { reply_to_message_id: ctx.message.message_id });
     }
 }

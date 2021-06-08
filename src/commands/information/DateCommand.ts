@@ -10,11 +10,11 @@ export default class DateCommand implements ICommand {
         const now = DateTime.now().setLocale("id");
 
         // WIB, WITA, WIT
-        const wib = now.toUTC(+7);
-        const wita = now.toUTC(+8);
-        const wit = now.toUTC(+9);
+        const wib = now.setZone("Asia/Jakarta");
+        const wita = now.setZone("Asia/Makassar");
+        const wit = now.setZone("Asia/Jayapura");
 
-        await ctx.replyWithMarkdown(`Jangan lupa waktu lagi ya ^_\n\nKalau kamu Waktu Indonesia Barat: ${wib.toFormat("FFF")}\nOh iya, kalau kamu Waktu Indonesia Bagian Tengah ini ya: ${wita.toFormat("FFF")}\nDan, yang terakhir kamu yang paling timur ini ya: ${wit.toFormat("FFF")}`, {
+        await ctx.replyWithMarkdown(`Jangan lupa waktu lagi ya <3\n\nKalau kamu Waktu Indonesia Barat: \`${wib.toFormat("FFF")}\`\nOh iya, kalau kamu Waktu Indonesia Bagian Tengah ini ya: \`${wita.toFormat("FFF")}\`\n\nDan, yang terakhir kamu yang paling timur ini ya: \`${wit.toFormat("FFF")}\``, {
             reply_to_message_id: ctx.message.message_id
         });
     }

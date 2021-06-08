@@ -1,9 +1,17 @@
-import { PathLike, readdirSync, writeFileSync } from "fs";
+import { existsSync, PathLike, readFileSync, unlinkSync, writeFileSync } from "fs";
 
 export default class TemporaryDatabase {
     constructor(public saveDirPath: PathLike) {}
     public db: Map<string, any> = new Map();
 
+    public reuse() {
+        if (!existsSync(`${this.saveDirPath}/db.json`)) return false;
+        const data = JSON.parse(readFileSync(`${this.saveDirPath}/db.json`, { encoding: "utf8" }));
+        if (data != []) data.forEach((doc: { name: any; value: any; }) => {
+            this.set(doc.name, doc.value);
+        });
+        return true;
+    }
     public get(key: string) {
         return this.db.get(key);
     }
@@ -21,15 +29,13 @@ export default class TemporaryDatabase {
         return this.db;
     }
     public save() {
+        if (existsSync(`${this.saveDirPath}/db.json`)) unlinkSync(`${this.saveDirPath}/db.json`);
         const now = Date.now();
         const data = this.toArray();
-        writeFileSync(`${this.saveDirPath}/data-${now}.json`, JSON.stringify(data));
+        if (data.length) writeFileSync(`${this.saveDirPath}/db.json`, JSON.stringify(data));
         return {
             dir: `${this.saveDirPath}/data-${now}.json`,
             data
         }
-    }
-    public saves() {
-        return readdirSync(this.saveDirPath);
     }
 }

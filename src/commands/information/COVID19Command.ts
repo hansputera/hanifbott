@@ -16,7 +16,7 @@ export default class Covid19Command implements ICommand {
             chartJS.defaults.font.family = "To the point regular";
         } });
         chart.registerFont(resolve(__dirname, "..", "..", "..", "assets", "ToThePointRegular.ttf"), { family: "To the point regular" });
-        const json = await (await this.bot.request("https://disease.sh/v3", !country ? "/covid-19/all" : `/covid-19/countries/${encodeURIComponent(country)}`)).json();
+        const { data: json } = await this.bot.request("https://disease.sh/v3").get(!country ? "/covid-19/all" : `/covid-19/countries/${encodeURIComponent(country)}`);;
         const text = `${country ? `- Statistik COVID19 di ${json.country} -\n` : ""}Kasus: ${json.cases.toLocaleString()}\nKematian: ${json.deaths.toLocaleString()}\nSembuh: ${json.recovered.toLocaleString()}\n\n**HARI INI**\n- Kasus: ${json.todayCases.toLocaleString()}\n- Kematian: ${json.todayDeaths.toLocaleString()}\n- Kesembuhan: ${json.todayRecovered.toLocaleString()}\n\nSource: [Disease API](https://disease.sh)`;
         const chartImage = await chart.renderToBuffer({
                 type: "bar",
