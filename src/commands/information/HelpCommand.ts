@@ -24,7 +24,7 @@ export default class HelpCommand implements ICommand {
             }
         } else {
             const categories = Array.from(this.bot.categories, ([_, category]) => category).filter(c => !c.hidden);
-            let text = `Hallo @${ctx.from.username}, berikut adalah list/daftar kategori dan perintah di dalam nya.\n\n`;
+            let text = `Hallo @${ctx.from.username ? ctx.from.username : "-"}, berikut adalah list/daftar kategori dan perintah di dalam nya.\n\n`;
             for (const category of categories) {
                 text += `+ **${category.name}** (${category.commands.map(cmd => `${cmd.name}`).join(", ")})\n`;
             }
