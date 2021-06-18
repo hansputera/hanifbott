@@ -35,6 +35,11 @@ bot.on("text", async (ctx) => {
             const cmd = bot.commands.get(command) || bot.commands.get(bot.aliases.get(command));
             if (cmd && !cmd.filters.includes(ctx.from.id) && !cmd.filters.includes(ctx.chat.id)) {
                 if (cmd.ownerOnly && ctx.from.id !== config.ownerID) return;
+                if (cmd.groupOnly && ctx.chat.type == "private") return; 
+                if (ctx.chat.type != "private") {
+                    const isAdmin = await bot.util.isAdmin(ctx.chat.id, ctx.from.id);
+                    if (cmd.adminOnly && !isAdmin) return;
+                }
                 if (ctx.from.id !== config.ownerID) {
                     if (!cooldowns.has(cmd.name)) cooldowns.set(cmd.name, new Map());
                     const now = Date.now();
@@ -67,6 +72,21 @@ bot.on("text", async (ctx) => {
                 } finally {
                     console.info(ctx.from.username, "|", ctx.from.id, "menggunakan perintah", cmd.name, "di", ctx.chat.id);
                     bot.db.save();
+                }
+            }
+        } else {
+            const replies = await bot.autoReply.gets(ctx.chat.id);
+            if (replies.length) {
+                const reply = replies.find(r => bot.util.matchContent(text, r.identifier));
+                if (reply) {
+                    if (reply.sticker) return await ctx.replyWithSticker(reply.sticker, { reply_to_message_id: ctx.message.message_id });
+                    else if (reply.attachment) {
+                        const fileUrl = await bot.telegram.getFileLink(reply.attachment);
+                        return await ctx.replyWithPhoto(fileUrl.origin + fileUrl.pathname, !reply.content ? {} : {
+                            caption: reply.content,
+                            parse_mode: "HTML"
+                        });
+                    } else return await ctx.replyWithHTML(reply.content);
                 }
             }
         }
@@ -110,11 +130,12 @@ bot.on("callback_query", async (ctx) => {
         });
     // Brainly
     } else if (json.brainly) {
+        bot.db.set(`brainly-${callbackQuery.message.message_id}`, 1);
         await ctx.deleteMessage(callbackQuery.message.message_id);
         bot.db.toArray().forEach((doc) => {
-            if (typeof doc.value === "object" && doc.value.brainly) bot.db.delete(doc.name);
+            if (typeof doc.value === "object" && doc.value.brainly && doc.value.userId == ctx.from.id) bot.db.delete(doc.name);
         });
-        if (json.attachments) await ctx.replyWithPhoto(json.attachments[0], {
+        if (json.media.length) await ctx.replyWithPhoto(json.media[0], {
             caption: `Ini beberapa jawaban dari soal \`"${json.content.length > 30 ? json.content.slice(0, 30) + "..." : json.content}"\`\n\n${json.answers.map((answer, index) => `${index+1}. ${answer.content}\nRating: ${answer.rating.length ? answer.rating : "-"}${answer.attachments.length ? "\nFoto: " + answer.attachments.join(", ") : ""}`).join("\n\n")}`,
             parse_mode: "Markdown",
             reply_markup: {
@@ -183,5 +204,4 @@ process.on("uncaughtException", async (err) => {
     bot.stop("Restart");
     bot.launch();
 });
-
 export default bot;

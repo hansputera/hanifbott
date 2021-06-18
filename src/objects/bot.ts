@@ -11,6 +11,8 @@ import lodash from "lodash";
 import Shortener from "./shortener";
 import Brainly from "./brainly";
 import PStoreNetScraper from "./pstorenet";
+import database from "./database";
+import AutoReply from "../utils/autoreply";
 
 export default class Bot extends Telegraf {
     public lodash = lodash;
@@ -24,6 +26,8 @@ export default class Bot extends Telegraf {
     public categories: Map<string, ICategory> = new Map();
     public commands: Map<string, ICommand> = new Map();
     public aliases: Map<string, string> = new Map();
+    public database = database;
+    public autoReply = new AutoReply(this);
 
     constructor(token: string, options?: Partial<Telegraf.Options<Context<Update>>>) {
         super(token, options);
@@ -56,6 +60,7 @@ export default class Bot extends Telegraf {
                         const cmdc: ICommand = new (require(`${directory}/${category}/${cmd}`).default)(this);
                         if (!cmdc.cooldown) cmdc.cooldown = 5000;
                         if (!cmdc.filters) cmdc.filters = [];
+                        if (!cmdc.adminOnly) cmdc.adminOnly = false;
                         cmdc.aliases.forEach(alias => {
                             this.aliases.set(alias, cmdc.name);
                         });

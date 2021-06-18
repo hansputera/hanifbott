@@ -1,8 +1,13 @@
+import type { ObjectId } from "bson";
 import type { Context, NarrowedContext } from "telegraf";
-import { Chat, Message, Update } from "typegram";
+import type { Chat, Message, PhotoSize, ReplyMessage, Sticker, Update } from "typegram";
 
 export type CTX = NarrowedContext<Context, Update> & {
-    message: Message.TextMessage
+    message: Message.TextMessage & {
+        sticker?: Sticker;
+        photo?: PhotoSize[];
+        caption?: string;
+    };
 };
 export interface ICategory
 {
@@ -19,6 +24,7 @@ export interface ICommand
     ownerOnly: boolean;
     cooldown?: number;
     groupOnly?: boolean;
+    adminOnly?: boolean;
     filters?: number[];
     execute(ctx: CTX, args: string[]): any | Promise<any>;
 }
@@ -53,4 +59,14 @@ export interface IBrainlyResponse {
         }
         attachments: { url: string; }[];
     }
+}
+
+export interface AutoReplyChat
+{
+    _id: ObjectId;
+    chatId: number;
+    identifier: string;
+    content: string;
+    sticker: string;
+    attachment: string;
 }
